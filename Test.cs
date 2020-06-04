@@ -27,8 +27,11 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
 {
 	public class Test : Strategy
 	{
-        private int Buy;
-        private int Sell;
+        private const int Buy = 1;
+        private const int Sell = -1;
+
+        private int consecutiveWinTradeCounter = 0;
+        private Trade lastTrade;
 
         private NinjaTrader.NinjaScript.Indicators.JiraiyaIndicators.DowTheoryIndicator DowTheoryIndicator1;
 
@@ -57,8 +60,6 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 // See the Help Guide for additional information
                 IsInstantiatedOnEachOptimizationIteration = true;
                 Strength = 2;
-                Buy = 1;
-                Sell = -1;
             }
             else if (State == State.Configure)
             {
@@ -79,14 +80,10 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             if (CurrentBars[0] < 1)
                 return;
 
-            
+            // Disable trading outside the time range
             if (!(Times[0][0].TimeOfDay > new TimeSpan(01, 00, 00) &&
                  Times[0][0].TimeOfDay < new TimeSpan(11, 59, 00)))
-            {
-                Print(Times[0][0].Date + "    " + Times[0][0].TimeOfDay + "    " + CurrentBar);
                 return;
-            }
-            
 
             // Set 1
             if (DowTheoryIndicator1[0] == Buy)
@@ -102,6 +99,24 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 SetStopLossAndProfitTarget(SideTrade.Short);
             }
 
+            // Test and increment the consecutive counter
+            if(SystemPerformance.AllTrades.Count != 0 && SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1].ProfitTicks > 0 &&
+                SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1] != lastTrade)
+            {
+                consecutiveWinTradeCounter++;
+                lastTrade = SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1];
+            }
+            else if(SystemPerformance.AllTrades.Count != 0 && SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1].ProfitTicks < 0)
+            {
+                consecutiveWinTradeCounter = 0;
+            }
+
+            
+
+            if (SystemPerformance.AllTrades.Count != 0)
+                Print(Times[0][0].Date + "    " + Times[0][0].TimeOfDay + "    " + CurrentBar + "   " + 
+                      SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1].ProfitTicks + "    " +
+                      consecutiveWinTradeCounter);
         }
 
         private void SetStopLossAndProfitTarget(SideTrade sideTrade)
@@ -130,7 +145,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
 
                     longTargetPrice += pointTwo.Price;
 
-                    SetProfitTarget("", CalculationMode.Price, longTargetPrice);
+                    SetProfitTarget(CalculationMode.Price, longTargetPrice);
 
                     Draw.Line(this, "Line " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), longTargetPrice,
@@ -143,7 +158,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                     shortTargetPrice -= pointTwo.Price;
                     shortTargetPrice *= -1;
 
-                    SetProfitTarget("", CalculationMode.Price, shortTargetPrice);
+                    SetProfitTarget(CalculationMode.Price, shortTargetPrice);
 
                     Draw.Line(this, "Line " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), shortTargetPrice,
