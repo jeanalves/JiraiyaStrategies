@@ -111,12 +111,35 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 consecutiveWinTradeCounter = 0;
             }
 
-            
+            // Criar código para calcular quantidade de contratos utilizando estratégia de soros
+
+            // Calcular preço do tick ou pip
+            // Multiplicar pela quantidade de lotes
+
+            // Criar código para aplicar estratégia de soros
 
             if (SystemPerformance.AllTrades.Count != 0)
-                Print(Times[0][0].Date + "    " + Times[0][0].TimeOfDay + "    " + CurrentBar + "   " + 
-                      SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1].ProfitTicks + "    " +
-                      consecutiveWinTradeCounter);
+                Print(Times[0][0].Date + "    " + Times[0][0].TimeOfDay + "    " + CurrentBar + "   " +
+                      SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1].ProfitTicks.ToString("N5") + "    " +
+                      consecutiveWinTradeCounter + "     " +
+                      (TickValueForUSDBase * 10).ToString("N5") + 
+                      "    TickSize: " + TickSize.ToString("N5"));
+        }
+
+        private double TickValueForUSDQuote
+        {
+            get
+            {
+                return TickSize;
+            }
+        }
+
+        private double TickValueForUSDBase
+        {
+            get
+            {
+                return TickSize / Close[0];
+            }
         }
 
         private void SetStopLossAndProfitTarget(SideTrade sideTrade)
