@@ -60,13 +60,16 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 // See the Help Guide for additional information
                 IsInstantiatedOnEachOptimizationIteration = true;
                 Strength = 2;
+                MaxPercentOfPivotRetraction = 80;
+                MinPercentOfPivotRetraction = 20;
             }
             else if (State == State.Configure)
             {
             }
             else if (State == State.DataLoaded)
             {
-                DowTheoryIndicator1 = DowTheoryIndicator(Close, CalculationTypeListDowTheory.Pivot, CalculationTypeList.SwingForward, Strength, true);
+                DowTheoryIndicator1 = DowTheoryIndicator(Close, CalculationTypeListDowTheory.Pivot, CalculationTypeList.SwingForward, Strength, true,
+                                                         MaxPercentOfPivotRetraction, MinPercentOfPivotRetraction);
                 DowTheoryIndicator1.Plots[0].Brush = Brushes.Transparent;
                 AddChartIndicator(DowTheoryIndicator1);
             }
@@ -202,6 +205,18 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
         [Range(1, int.MaxValue)]
         [Display(Name = "Strength", Order = 1, GroupName = "Parameters")]
         public int Strength
+        { get; set; }
+
+        [NinjaScriptProperty]
+        [Range(0, 100)]
+        [Display(Name = "Max percent of pivot retraction", Order = 6, GroupName = "Parameters")]
+        public double MaxPercentOfPivotRetraction
+        { get; set; }
+
+        [NinjaScriptProperty]
+        [Range(0, 100)]
+        [Display(Name = "Min percent of pivot retraction", Order = 7, GroupName = "Parameters")]
+        public double MinPercentOfPivotRetraction
         { get; set; }
         #endregion
     }
