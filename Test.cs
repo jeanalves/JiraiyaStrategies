@@ -59,6 +59,9 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 // Disable this property for performance gains in Strategy Analyzer optimizations
                 // See the Help Guide for additional information
                 IsInstantiatedOnEachOptimizationIteration = true;
+
+                CalculationTypeDT = CalculationTypeListDowTheory.Pivot;
+                CalculationTypePCW = CalculationTypeList.SwingForward;
                 Strength = 2;
                 MaxPercentOfPivotRetraction = 80;
                 MinPercentOfPivotRetraction = 20;
@@ -68,7 +71,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             }
             else if (State == State.DataLoaded)
             {
-                DowTheoryIndicator1 = DowTheoryIndicator(Close, CalculationTypeListDowTheory.Pivot, CalculationTypeList.SwingForward, Strength, true,
+                DowTheoryIndicator1 = DowTheoryIndicator(Close, CalculationTypeDT, CalculationTypePCW, Strength, true,
                                                          MaxPercentOfPivotRetraction, MinPercentOfPivotRetraction);
                 DowTheoryIndicator1.Plots[0].Brush = Brushes.Transparent;
                 AddChartIndicator(DowTheoryIndicator1);
@@ -201,21 +204,32 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
         }
 
         #region Properties
+
+        [NinjaScriptProperty]
+        [Display(Name = "Dow theory calculation type", Order = 0, GroupName = "Parameters")]
+        public CalculationTypeListDowTheory CalculationTypeDT
+        { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name = "Price action swing calculation type", Order = 1, GroupName = "Parameters")]
+        public CalculationTypeList CalculationTypePCW
+        { get; set; }
+
         [NinjaScriptProperty]
         [Range(1, int.MaxValue)]
-        [Display(Name = "Strength", Order = 1, GroupName = "Parameters")]
+        [Display(Name = "Strength", Order = 2, GroupName = "Parameters")]
         public int Strength
         { get; set; }
 
         [NinjaScriptProperty]
         [Range(0, 100)]
-        [Display(Name = "Max percent of pivot retraction", Order = 6, GroupName = "Parameters")]
+        [Display(Name = "Max percent of pivot retraction", Order = 3, GroupName = "Parameters")]
         public double MaxPercentOfPivotRetraction
         { get; set; }
 
         [NinjaScriptProperty]
         [Range(0, 100)]
-        [Display(Name = "Min percent of pivot retraction", Order = 7, GroupName = "Parameters")]
+        [Display(Name = "Min percent of pivot retraction", Order = 4, GroupName = "Parameters")]
         public double MinPercentOfPivotRetraction
         { get; set; }
         #endregion
