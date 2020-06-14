@@ -65,6 +65,8 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 Strength = 2;
                 MaxPercentOfPivotRetraction = 80;
                 MinPercentOfPivotRetraction = 20;
+                MaxTime = new TimeSpan(11, 59, 00);
+                MinTime = new TimeSpan(01, 00, 00);
             }
             else if (State == State.Configure)
             {
@@ -87,8 +89,8 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 return;
 
             // Disable trading outside the time range
-            if (!(Times[0][0].TimeOfDay > new TimeSpan(01, 00, 00) &&
-                 Times[0][0].TimeOfDay < new TimeSpan(11, 59, 00)))
+            if (!(Times[0][0].TimeOfDay > MinTime &&
+                 Times[0][0].TimeOfDay < MaxTime))
                 return;
 
             // Set 1
@@ -231,6 +233,16 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
         [Range(0, 100)]
         [Display(Name = "Min percent of pivot retraction", Order = 4, GroupName = "Parameters")]
         public double MinPercentOfPivotRetraction
+        { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name = "Max time", Order = 5, GroupName = "Parameters")]
+        public TimeSpan MaxTime
+        { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name = "Min time", Order = 6, GroupName = "Parameters")]
+        public TimeSpan MinTime
         { get; set; }
         #endregion
     }
