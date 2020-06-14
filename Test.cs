@@ -34,6 +34,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
         private Trade lastTrade;
 
         private NinjaTrader.NinjaScript.Indicators.JiraiyaIndicators.DowTheoryIndicator DowTheoryIndicator1;
+        private Dictionary<HourList, TimeSpan> hourDictionary = new Dictionary<HourList, TimeSpan>();
 
         protected override void OnStateChange()
         {
@@ -67,6 +68,10 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 MinPercentOfPivotRetraction = 20;
                 MaxTime = new TimeSpan(11, 59, 00);
                 MinTime = new TimeSpan(01, 00, 00);
+                MaxTimeIsh = HourList.hr12h00;
+                MinTimeIsh = HourList.hr01h00;
+
+                CreateDictionary();
             }
             else if (State == State.Configure)
             {
@@ -92,6 +97,8 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             if (!(Times[0][0].TimeOfDay > MinTime &&
                  Times[0][0].TimeOfDay < MaxTime))
                 return;
+
+            Print(hourDictionary[MaxTimeIsh]);
 
             // Set 1
             if (DowTheoryIndicator1[0] == Buy)
@@ -205,6 +212,59 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             return (barIndex - owner.CurrentBar) < 0 ? (barIndex - owner.CurrentBar) * -1 : barIndex - owner.CurrentBar;
         }
 
+        private void CreateDictionary()
+        {
+            hourDictionary.Add(HourList.hr00h00, new TimeSpan(00, 00, 00));
+            hourDictionary.Add(HourList.hr00h30, new TimeSpan(00, 30, 00));
+            hourDictionary.Add(HourList.hr01h00, new TimeSpan(01, 00, 00));
+            hourDictionary.Add(HourList.hr01h30, new TimeSpan(01, 30, 00));
+            hourDictionary.Add(HourList.hr02h00, new TimeSpan(02, 00, 00));
+            hourDictionary.Add(HourList.hr02h30, new TimeSpan(02, 30, 00));
+            hourDictionary.Add(HourList.hr03h00, new TimeSpan(03, 00, 00));
+            hourDictionary.Add(HourList.hr03h30, new TimeSpan(03, 30, 00));
+            hourDictionary.Add(HourList.hr04h00, new TimeSpan(04, 00, 00));
+            hourDictionary.Add(HourList.hr04h30, new TimeSpan(04, 30, 00));
+            hourDictionary.Add(HourList.hr05h00, new TimeSpan(05, 00, 00));
+            hourDictionary.Add(HourList.hr05h30, new TimeSpan(05, 30, 00));
+            hourDictionary.Add(HourList.hr06h00, new TimeSpan(06, 00, 00));
+            hourDictionary.Add(HourList.hr06h30, new TimeSpan(06, 30, 00));
+            hourDictionary.Add(HourList.hr07h00, new TimeSpan(07, 00, 00));
+            hourDictionary.Add(HourList.hr07h30, new TimeSpan(07, 30, 00));
+            hourDictionary.Add(HourList.hr08h00, new TimeSpan(08, 00, 00));
+            hourDictionary.Add(HourList.hr08h30, new TimeSpan(08, 30, 00));
+            hourDictionary.Add(HourList.hr09h00, new TimeSpan(09, 00, 00));
+            hourDictionary.Add(HourList.hr09h30, new TimeSpan(09, 30, 00));
+            hourDictionary.Add(HourList.hr10h00, new TimeSpan(10, 00, 00));
+            hourDictionary.Add(HourList.hr10h30, new TimeSpan(10, 30, 00));
+            hourDictionary.Add(HourList.hr11h00, new TimeSpan(11, 00, 00));
+            hourDictionary.Add(HourList.hr11h30, new TimeSpan(11, 30, 00));
+            hourDictionary.Add(HourList.hr12h00, new TimeSpan(12, 00, 00));
+            hourDictionary.Add(HourList.hr12h30, new TimeSpan(12, 30, 00));
+            hourDictionary.Add(HourList.hr13h00, new TimeSpan(13, 00, 00));
+            hourDictionary.Add(HourList.hr13h30, new TimeSpan(13, 30, 00));
+            hourDictionary.Add(HourList.hr14h00, new TimeSpan(14, 00, 00));
+            hourDictionary.Add(HourList.hr14h30, new TimeSpan(14, 30, 00));
+            hourDictionary.Add(HourList.hr15h00, new TimeSpan(15, 00, 00));
+            hourDictionary.Add(HourList.hr15h30, new TimeSpan(15, 30, 00));
+            hourDictionary.Add(HourList.hr16h00, new TimeSpan(16, 00, 00));
+            hourDictionary.Add(HourList.hr16h30, new TimeSpan(16, 30, 00));
+            hourDictionary.Add(HourList.hr17h00, new TimeSpan(17, 00, 00));
+            hourDictionary.Add(HourList.hr17h30, new TimeSpan(17, 30, 00));
+            hourDictionary.Add(HourList.hr18h00, new TimeSpan(18, 00, 00));
+            hourDictionary.Add(HourList.hr18h30, new TimeSpan(18, 30, 00));
+            hourDictionary.Add(HourList.hr19h00, new TimeSpan(19, 00, 00));
+            hourDictionary.Add(HourList.hr19h30, new TimeSpan(19, 30, 00));
+            hourDictionary.Add(HourList.hr20h00, new TimeSpan(20, 00, 00));
+            hourDictionary.Add(HourList.hr20h30, new TimeSpan(20, 30, 00));
+            hourDictionary.Add(HourList.hr21h00, new TimeSpan(21, 00, 00));
+            hourDictionary.Add(HourList.hr21h30, new TimeSpan(21, 30, 00));
+            hourDictionary.Add(HourList.hr22h00, new TimeSpan(22, 00, 00));
+            hourDictionary.Add(HourList.hr22h30, new TimeSpan(22, 30, 00));
+            hourDictionary.Add(HourList.hr23h00, new TimeSpan(23, 00, 00));
+            hourDictionary.Add(HourList.hr23h30, new TimeSpan(23, 30, 00));
+            hourDictionary.Add(HourList.hr23h59, new TimeSpan(23, 59, 00));
+        }
+
         #region Properties
 
         [NinjaScriptProperty]
@@ -244,6 +304,16 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
         [Display(Name = "Min time", Order = 6, GroupName = "Parameters")]
         public TimeSpan MinTime
         { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name = "Min time", Order = 7, GroupName = "Parameters")]
+        public HourList MaxTimeIsh
+        { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name = "Min time", Order = 8, GroupName = "Parameters")]
+        public HourList MinTimeIsh
+        { get; set; }
         #endregion
     }
 
@@ -251,5 +321,58 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
     {
         Long,
         Short
+    }
+
+    public enum HourList
+    {
+        hr00h00,
+        hr00h30,
+        hr01h00,
+        hr01h30,
+        hr02h00,
+        hr02h30,
+        hr03h00,
+        hr03h30,
+        hr04h00,
+        hr04h30,
+        hr05h00,
+        hr05h30,
+        hr06h00,
+        hr06h30,
+        hr07h00,
+        hr07h30,
+        hr08h00,
+        hr08h30,
+        hr09h00,
+        hr09h30,
+        hr10h00,
+        hr10h30,
+        hr11h00,
+        hr11h30,
+        hr12h00,
+        hr12h30,
+        hr13h00,
+        hr13h30,
+        hr14h00,
+        hr14h30,
+        hr15h00,
+        hr15h30,
+        hr16h00,
+        hr16h30,
+        hr17h00,
+        hr17h30,
+        hr18h00,
+        hr18h30,
+        hr19h00,
+        hr19h30,
+        hr20h00,
+        hr20h30,
+        hr21h00,
+        hr21h30,
+        hr22h00,
+        hr22h30,
+        hr23h00,
+        hr23h30,
+        hr23h59
     }
 }
