@@ -66,10 +66,8 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 Strength = 2;
                 MaxPercentOfPivotRetraction = 80;
                 MinPercentOfPivotRetraction = 20;
-                MaxTime = new TimeSpan(11, 59, 00);
-                MinTime = new TimeSpan(01, 00, 00);
-                MaxTimeIsh = HourList.hr12h00;
-                MinTimeIsh = HourList.hr01h00;
+                MaxTime = HourList.hr12h00;
+                MinTime = HourList.hr01h00;
 
                 CreateDictionary();
             }
@@ -94,11 +92,9 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 return;
 
             // Disable trading outside the time range
-            if (!(Times[0][0].TimeOfDay > MinTime &&
-                 Times[0][0].TimeOfDay < MaxTime))
+            if (!(Times[0][0].TimeOfDay > hourDictionary[MinTime] &&
+                 Times[0][0].TimeOfDay < hourDictionary[MaxTime]))
                 return;
-
-            Print(hourDictionary[MaxTimeIsh]);
 
             // Set 1
             if (DowTheoryIndicator1[0] == Buy)
@@ -296,24 +292,16 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
         { get; set; }
 
         [NinjaScriptProperty]
-        [Display(Name = "Max time", Order = 5, GroupName = "Parameters")]
-        public TimeSpan MaxTime
+        [Display(Name = "Min time", Order = 5, GroupName = "Parameters")]
+        public HourList MinTime
         { get; set; }
 
         [NinjaScriptProperty]
-        [Display(Name = "Min time", Order = 6, GroupName = "Parameters")]
-        public TimeSpan MinTime
+        [Display(Name = "Max time", Order = 6, GroupName = "Parameters")]
+        public HourList MaxTime
         { get; set; }
 
-        [NinjaScriptProperty]
-        [Display(Name = "Min time", Order = 7, GroupName = "Parameters")]
-        public HourList MaxTimeIsh
-        { get; set; }
-
-        [NinjaScriptProperty]
-        [Display(Name = "Min time", Order = 8, GroupName = "Parameters")]
-        public HourList MinTimeIsh
-        { get; set; }
+        
         #endregion
     }
 
