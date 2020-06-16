@@ -59,7 +59,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 BarsRequiredToTrade = 20;
                 // Disable this property for performance gains in Strategy Analyzer optimizations
                 // See the Help Guide for additional information
-                IsInstantiatedOnEachOptimizationIteration = true;
+                IsInstantiatedOnEachOptimizationIteration = IsInstantiatedOnEachOptimizationIterationIsh;
 
                 CalculationTypeDT = CalculationTypeListDowTheory.Pivot;
                 CalculationTypePCW = CalculationTypeList.SwingForward;
@@ -68,6 +68,8 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 MinPercentOfPivotRetraction = 20;
                 MaxTime = HourList.hr12h00;
                 MinTime = HourList.hr01h00;
+                PlotOnChart = true;
+                IsInstantiatedOnEachOptimizationIterationIsh = true;
 
                 CreateDictionary();
             }
@@ -79,7 +81,8 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 DowTheoryIndicator1 = DowTheoryIndicator(Close, CalculationTypeDT, CalculationTypePCW, Strength, true,
                                                          MaxPercentOfPivotRetraction, MinPercentOfPivotRetraction);
                 DowTheoryIndicator1.Plots[0].Brush = Brushes.Transparent;
-                AddChartIndicator(DowTheoryIndicator1);
+                if(PlotOnChart)
+                    AddChartIndicator(DowTheoryIndicator1);
             }
         }
 
@@ -262,7 +265,6 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
         }
 
         #region Properties
-
         [NinjaScriptProperty]
         [Display(Name = "Dow theory calculation type", Order = 0, GroupName = "Parameters")]
         public CalculationTypeListDowTheory CalculationTypeDT
@@ -274,7 +276,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
         { get; set; }
 
         [NinjaScriptProperty]
-        [Range(1, int.MaxValue)]
+        [Range(0, int.MaxValue)]
         [Display(Name = "Strength", Order = 2, GroupName = "Parameters")]
         public int Strength
         { get; set; }
@@ -301,7 +303,16 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
         public HourList MaxTime
         { get; set; }
 
-        
+        [NinjaScriptProperty]
+        [Display(Name = "Plot on chart", Order = 7, GroupName = "Parameters")]
+        public bool PlotOnChart
+        { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name = "Is Instantiated On Each Optimization Iteration", Order = 8, GroupName = "Parameters")]
+        public bool IsInstantiatedOnEachOptimizationIterationIsh
+        { get; set; }
+
         #endregion
     }
 
