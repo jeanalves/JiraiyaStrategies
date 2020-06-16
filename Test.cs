@@ -133,11 +133,11 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             // Criar código para aplicar estratégia de soros
 
             if (SystemPerformance.AllTrades.Count != 0)
-                Print(Times[0][0].Date + "    " + Times[0][0].TimeOfDay + "    " + CurrentBar + "   " +
-                      SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1].ProfitTicks.ToString("N5") + "    " +
-                      consecutiveWinTradeCounter + "     " +
-                      (TickValueForUSDBase * 10).ToString("N5") + 
-                      "    TickSize: " + TickSize.ToString("N5"));
+                Print(Times[0][0].Date.ToString("dd/MM/yyyy") + "    " + 
+                      Times[0][0].TimeOfDay + "    " + 
+                      "Current time: " + DateTime.Now.ToString("HH:mm:ss") + "    " +
+                      SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1].ProfitCurrency + "    " +
+                      "Current consecutive win: " + consecutiveWinTradeCounter);
         }
 
         private double TickValueForUSDQuote
