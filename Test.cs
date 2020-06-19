@@ -94,6 +94,10 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             if (CurrentBars[0] < 1)
                 return;
 
+            // Prevents opening another operation while one is already taking place
+            if (Position.MarketPosition != MarketPosition.Flat)
+                return;
+
             // Disable trading outside the time range
             if (!(Times[0][0].TimeOfDay > hourDictionary[MinTime] &&
                  Times[0][0].TimeOfDay < hourDictionary[MaxTime]))
@@ -125,12 +129,12 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 consecutiveWinTradeCounter = 0;
             }
 
-            // Criar código para calcular quantidade de contratos utilizando estratégia de soros
+            // Criar cï¿½digo para calcular quantidade de contratos utilizando estratï¿½gia de soros
 
-            // Calcular preço do tick ou pip
+            // Calcular preï¿½o do tick ou pip
             // Multiplicar pela quantidade de lotes
 
-            // Criar código para aplicar estratégia de soros
+            // Criar cï¿½digo para aplicar estratï¿½gia de soros
 
             if (SystemPerformance.AllTrades.Count != 0)
                 Print(Times[0][0].Date.ToString("dd/MM/yyyy") + "    " + 
@@ -167,7 +171,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
 
             MatrixPoints lastMastrix = DowTheoryIndicator1.LastMatrix;
 
-            // Definir dois pontos que vou utilizar como referencia para a projeção do alvo
+            // Definir dois pontos que vou utilizar como referencia para a projeï¿½ï¿½o do alvo
             Point pointOne = lastMastrix.PointsList[1];
             Point pointTwo = lastMastrix.PointsList[2];
 
