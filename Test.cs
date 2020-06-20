@@ -62,10 +62,10 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 CalculationTypeDT                               = CalculationTypeListDowTheory.Pivot;
                 CalculationTypePCW                              = CalculationTypeList.SwingForward;
                 Strength                                        = 2;
-                MaxPercentOfPivotRetraction                     = 80;
-                MinPercentOfPivotRetraction                     = 20;
-                MaxTime                                         = HourList.hr12h00;
+                MaxPercentOfPivotRetraction                     = 100;
+                MinPercentOfPivotRetraction                     = 0;
                 MinTime                                         = HourList.hr01h00;
+                MaxTime                                         = HourList.hr12h00;
                 PlotOnChart                                     = true;
                 IsInstantiatedOnEachOptimizationIterationIsh    = true;
             }
@@ -104,15 +104,17 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             // Set 1
             if (DowTheoryIndicator1[0] == Buy)
             {
-                EnterLong(Convert.ToInt32(DefaultQuantity), SideTrade.Long.ToString());
-                SetStopLossAndProfitTarget(SideTrade.Long);
+                string longOrderID = SideTrade.Long.ToString() + CurrentBar;
+                EnterLong(Convert.ToInt32(DefaultQuantity), longOrderID);
+                SetStopLossAndProfitTarget(SideTrade.Long, longOrderID);
             }
 
             // Set 2
             if (DowTheoryIndicator1[0] == Sell)
             {
-                EnterShort(Convert.ToInt32(DefaultQuantity), SideTrade.Short.ToString());
-                SetStopLossAndProfitTarget(SideTrade.Short);
+                string shortOrderID = SideTrade.Short.ToString() + CurrentBar;
+                EnterShort(Convert.ToInt32(DefaultQuantity), shortOrderID);
+                SetStopLossAndProfitTarget(SideTrade.Short, shortOrderID);
             }
 
             // Test and increment the consecutive counter
@@ -158,7 +160,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             }
         }
 
-        private void SetStopLossAndProfitTarget(SideTrade sideTrade)
+        private void SetStopLossAndProfitTarget(SideTrade sideTrade, string orderID)
         {
             //----Bearish----|---Bullish---
             //----3----------|----------0--
@@ -168,8 +170,6 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             //------------0--|--3----------
 
             MatrixPoints lastMastrix = DowTheoryIndicator1.LastMatrix;
-
-            // Definir dois pontos que vou utilizar como referencia para a proje��o do alvo
             Point pointOne = lastMastrix.PointsList[1];
             Point pointTwo = lastMastrix.PointsList[2];
 
@@ -181,42 +181,39 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                               ConvertBarIndexToBarsAgo(this, pointOne.BarIndex), pointOne.Price, Brushes.Green);
 
                     // Definir um ponto para o stop
-                    SetStopLoss(SideTrade.Long.ToString(), CalculationMode.Price, pointOne.Price, false);
+                    SetStopLoss(orderID, CalculationMode.Price, pointOne.Price, false);
 
                     double longTargetPrice = pointOne.Price - pointTwo.Price < 0 ?
                                              (pointOne.Price - pointTwo.Price) * -1 : pointOne.Price - pointTwo.Price;
 
                     longTargetPrice += pointTwo.Price;
-
                     Draw.Line(this, "Line " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), longTargetPrice,
                               ConvertBarIndexToBarsAgo(this, pointOne.BarIndex), longTargetPrice, Brushes.Green);
 
-                    SetProfitTarget(SideTrade.Long.ToString(), CalculationMode.Price, longTargetPrice, false);
+                    SetProfitTarget(orderID, CalculationMode.Price, longTargetPrice, false);
                     break;
+
                 case SideTrade.Short:
                     Draw.Line(this, "Line " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), pointOne.Price,
-                              ConvertBarIndexToBarsAgo(this, pointOne.BarIndex), pointOne.Price, Brushes.Green);
+                              ConvertBarIndexToBarsAgo(this, pointOne.BarIndex), pointOne.Price, Brushes.Red);
 
                     // Definir um ponto para o stop
-                    SetStopLoss(SideTrade.Short.ToString(), CalculationMode.Price, pointOne.Price, false);
+                    SetStopLoss(orderID, CalculationMode.Price, pointOne.Price, false);
 
                     double shortTargetPrice = pointOne.Price - pointTwo.Price < 0 ?
                                              (pointOne.Price - pointTwo.Price) * -1 : pointOne.Price - pointTwo.Price;
 
                     shortTargetPrice -= pointTwo.Price;
                     shortTargetPrice *= -1;
-
                     Draw.Line(this, "Line " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), shortTargetPrice,
                               ConvertBarIndexToBarsAgo(this, pointOne.BarIndex), shortTargetPrice, Brushes.Red);
 
-                    SetProfitTarget(SideTrade.Short.ToString(), CalculationMode.Price, shortTargetPrice);
+                    SetProfitTarget(orderID, CalculationMode.Price, shortTargetPrice);
                     break;
             }
-
-            // Com os dois pontos calcular o alvo
         }
 
         private static int ConvertBarIndexToBarsAgo(NinjaScriptBase owner, int barIndex)
