@@ -107,6 +107,9 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 string longOrderID = SideTrade.Long.ToString() + CurrentBar;
                 EnterLong(Convert.ToInt32(DefaultQuantity), longOrderID);
                 SetStopLossAndProfitTarget(SideTrade.Long, longOrderID);
+
+                //This line prevents the same signal open another order in the same bar
+                DowTheoryIndicator1.ResetLongShortSignal();
             }
 
             // Set 2
@@ -115,10 +118,13 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 string shortOrderID = SideTrade.Short.ToString() + CurrentBar;
                 EnterShort(Convert.ToInt32(DefaultQuantity), shortOrderID);
                 SetStopLossAndProfitTarget(SideTrade.Short, shortOrderID);
+
+                //This line prevents the same signal open another order in the same bar
+                DowTheoryIndicator1.ResetLongShortSignal();
             }
 
             // Test and increment the consecutive counter
-            if(SystemPerformance.AllTrades.Count != 0 && SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1].ProfitTicks > 0 &&
+            if (SystemPerformance.AllTrades.Count != 0 && SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1].ProfitTicks > 0 &&
                 SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1] != lastTrade)
             {
                 consecutiveWinTradeCounter++;
@@ -136,7 +142,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
 
             // Criar c�digo para aplicar estrat�gia de soros
 
-            //PrintStrategyStatus();
+            PrintStrategyStatus();
         }
 
         private double TickValueForUSDQuote
@@ -193,6 +199,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                                              (pointOne.Price - pointTwo.Price) * -1 : pointOne.Price - pointTwo.Price;
 
                     longTargetPrice += pointTwo.Price;
+
                     Draw.Line(this, "Profit target line " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), longTargetPrice,
                               ConvertBarIndexToBarsAgo(this, pointZero.BarIndex), longTargetPrice, Brushes.Green);
@@ -213,6 +220,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
 
                     shortTargetPrice -= pointTwo.Price;
                     shortTargetPrice *= -1;
+
                     Draw.Line(this, "Profit target line " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), shortTargetPrice,
                               ConvertBarIndexToBarsAgo(this, pointZero.BarIndex), shortTargetPrice, Brushes.Red);
