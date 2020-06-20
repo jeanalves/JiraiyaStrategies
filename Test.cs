@@ -136,7 +136,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
 
             // Criar c�digo para aplicar estrat�gia de soros
 
-            PrintStrategyStatus();
+            //PrintStrategyStatus();
         }
 
         private double TickValueForUSDQuote
@@ -174,16 +174,17 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             //-------2---\---|---/---1-----
             //------------0--|--3----------
 
-            MatrixPoints lastMastrix = DowTheoryIndicator1.LastMatrix;
-            Point pointOne = lastMastrix.PointsList[1];
-            Point pointTwo = lastMastrix.PointsList[2];
+            MatrixPoints lastMastrix    = DowTheoryIndicator1.LastMatrix;
+            Point pointZero             = lastMastrix.PointsList[0];
+            Point pointOne              = lastMastrix.PointsList[1];
+            Point pointTwo              = lastMastrix.PointsList[2];
 
             switch (sideTrade)
             {
                 case SideTrade.Long:
-                    Draw.Line(this, "Line " + pointOne.Index,
+                    Draw.Line(this, "Stop loss line " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), pointOne.Price,
-                              ConvertBarIndexToBarsAgo(this, pointOne.BarIndex), pointOne.Price, Brushes.Green);
+                              ConvertBarIndexToBarsAgo(this, pointZero.BarIndex), pointOne.Price, Brushes.Green);
 
                     // Definir um ponto para o stop
                     SetStopLoss(orderID, CalculationMode.Price, pointOne.Price, false);
@@ -192,17 +193,17 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                                              (pointOne.Price - pointTwo.Price) * -1 : pointOne.Price - pointTwo.Price;
 
                     longTargetPrice += pointTwo.Price;
-                    Draw.Line(this, "Line " + pointOne.Index,
+                    Draw.Line(this, "Profit target line " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), longTargetPrice,
-                              ConvertBarIndexToBarsAgo(this, pointOne.BarIndex), longTargetPrice, Brushes.Green);
+                              ConvertBarIndexToBarsAgo(this, pointZero.BarIndex), longTargetPrice, Brushes.Green);
 
                     SetProfitTarget(orderID, CalculationMode.Price, longTargetPrice, false);
                     break;
 
                 case SideTrade.Short:
-                    Draw.Line(this, "Line " + pointOne.Index,
+                    Draw.Line(this, "Stop loss line " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), pointOne.Price,
-                              ConvertBarIndexToBarsAgo(this, pointOne.BarIndex), pointOne.Price, Brushes.Red);
+                              ConvertBarIndexToBarsAgo(this, pointZero.BarIndex), pointOne.Price, Brushes.Red);
 
                     // Definir um ponto para o stop
                     SetStopLoss(orderID, CalculationMode.Price, pointOne.Price, false);
@@ -212,9 +213,9 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
 
                     shortTargetPrice -= pointTwo.Price;
                     shortTargetPrice *= -1;
-                    Draw.Line(this, "Line " + pointOne.Index,
+                    Draw.Line(this, "Profit target line " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), shortTargetPrice,
-                              ConvertBarIndexToBarsAgo(this, pointOne.BarIndex), shortTargetPrice, Brushes.Red);
+                              ConvertBarIndexToBarsAgo(this, pointZero.BarIndex), shortTargetPrice, Brushes.Red);
 
                     SetProfitTarget(orderID, CalculationMode.Price, shortTargetPrice);
                     break;
