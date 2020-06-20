@@ -106,14 +106,14 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             // Set 1
             if (DowTheoryIndicator1[0] == Buy)
             {
-                EnterLong(Convert.ToInt32(DefaultQuantity), "");
+                EnterLong(Convert.ToInt32(DefaultQuantity));
                 SetStopLossAndProfitTarget(SideTrade.Long);
             }
 
             // Set 2
             if (DowTheoryIndicator1[0] == Sell)
             {
-                EnterShort(Convert.ToInt32(DefaultQuantity), "");
+                EnterShort(Convert.ToInt32(DefaultQuantity));
                 SetStopLossAndProfitTarget(SideTrade.Short);
             }
 
@@ -176,7 +176,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             Point pointTwo = lastMastrix.PointsList[2];
 
             // Definir um ponto para o stop
-            SetStopLoss("", CalculationMode.Price, pointOne.Price, false);
+            SetStopLoss(CalculationMode.Price, pointOne.Price);
 
             switch (sideTrade)
             {
