@@ -27,62 +27,60 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
 {
 	public class Test : Strategy
 	{
-        private const int Buy = 1;
-        private const int Sell = -1;
-
-        private int consecutiveWinTradeCounter = 0;
+        private const int Buy                   = 1;
+        private const int Sell                  = -1;
+        private int consecutiveWinTradeCounter  = 0;
         private Trade lastTrade;
-
-        private NinjaTrader.NinjaScript.Indicators.JiraiyaIndicators.DowTheoryIndicator DowTheoryIndicator1;
-        private Dictionary<HourList, TimeSpan> hourDictionary = new Dictionary<HourList, TimeSpan>();
+        private Indicators.JiraiyaIndicators.DowTheoryIndicator DowTheoryIndicator1;
+        private Dictionary<HourList, TimeSpan> hourDictionary;
 
         protected override void OnStateChange()
         {
             if (State == State.SetDefaults)
             {
-                Description = @"Enter the description for your new custom Strategy here.";
-                Name = "Test";
-                Calculate = Calculate.OnPriceChange;
-                EntriesPerDirection = 1;
-                EntryHandling = EntryHandling.AllEntries;
-                IsExitOnSessionCloseStrategy = true;
-                ExitOnSessionCloseSeconds = 30;
-                IsFillLimitOnTouch = false;
-                MaximumBarsLookBack = MaximumBarsLookBack.TwoHundredFiftySix;
-                OrderFillResolution = OrderFillResolution.Standard;
-                Slippage = 0;
-                StartBehavior = StartBehavior.WaitUntilFlat;
-                TimeInForce = TimeInForce.Gtc;
-                TraceOrders = false;
-                RealtimeErrorHandling = RealtimeErrorHandling.StopCancelClose;
-                StopTargetHandling = StopTargetHandling.PerEntryExecution;
-                BarsRequiredToTrade = 20;
+                Description                                     = @"Enter the description for your new custom Strategy here.";
+                Name                                            = "Test";
+                Calculate                                       = Calculate.OnPriceChange;
+                EntriesPerDirection                             = 1;
+                EntryHandling                                   = EntryHandling.AllEntries;
+                IsExitOnSessionCloseStrategy                    = true;
+                ExitOnSessionCloseSeconds                       = 30;
+                IsFillLimitOnTouch                              = false;
+                MaximumBarsLookBack                             = MaximumBarsLookBack.TwoHundredFiftySix;
+                OrderFillResolution                             = OrderFillResolution.Standard;
+                Slippage                                        = 0;
+                StartBehavior                                   = StartBehavior.WaitUntilFlat;
+                TimeInForce                                     = TimeInForce.Gtc;
+                TraceOrders                                     = false;
+                RealtimeErrorHandling                           = RealtimeErrorHandling.StopCancelClose;
+                StopTargetHandling                              = StopTargetHandling.PerEntryExecution;
+                BarsRequiredToTrade                             = 20;
                 // Disable this property for performance gains in Strategy Analyzer optimizations
                 // See the Help Guide for additional information
-                IsInstantiatedOnEachOptimizationIteration = IsInstantiatedOnEachOptimizationIterationIsh;
+                IsInstantiatedOnEachOptimizationIteration       = IsInstantiatedOnEachOptimizationIterationIsh;
 
-                CalculationTypeDT = CalculationTypeListDowTheory.Pivot;
-                CalculationTypePCW = CalculationTypeList.SwingForward;
-                Strength = 2;
-                MaxPercentOfPivotRetraction = 80;
-                MinPercentOfPivotRetraction = 20;
-                MaxTime = HourList.hr12h00;
-                MinTime = HourList.hr01h00;
-                PlotOnChart = true;
-                IsInstantiatedOnEachOptimizationIterationIsh = true;
-
-                CreateDictionary();
+                CalculationTypeDT                               = CalculationTypeListDowTheory.Pivot;
+                CalculationTypePCW                              = CalculationTypeList.SwingForward;
+                Strength                                        = 2;
+                MaxPercentOfPivotRetraction                     = 80;
+                MinPercentOfPivotRetraction                     = 20;
+                MaxTime                                         = HourList.hr12h00;
+                MinTime                                         = HourList.hr01h00;
+                PlotOnChart                                     = true;
+                IsInstantiatedOnEachOptimizationIterationIsh    = true;
             }
             else if (State == State.Configure)
             {
             }
             else if (State == State.DataLoaded)
             {
-                DowTheoryIndicator1 = DowTheoryIndicator(Close, CalculationTypeDT, CalculationTypePCW, Strength, true,
-                                                         MaxPercentOfPivotRetraction, MinPercentOfPivotRetraction);
-                DowTheoryIndicator1.Plots[0].Brush = Brushes.Transparent;
+                DowTheoryIndicator1                 = DowTheoryIndicator(Close, CalculationTypeDT, CalculationTypePCW, Strength, true,
+                                                                         MaxPercentOfPivotRetraction, MinPercentOfPivotRetraction);
+                hourDictionary                      = new Dictionary<HourList, TimeSpan>();
+                DowTheoryIndicator1.Plots[0].Brush  = Brushes.Transparent;
                 if(PlotOnChart)
                     AddChartIndicator(DowTheoryIndicator1);
+                CreateDictionary();
             }
         }
 
