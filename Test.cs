@@ -27,62 +27,60 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
 {
 	public class Test : Strategy
 	{
-        private const int Buy = 1;
-        private const int Sell = -1;
-
-        private int consecutiveWinTradeCounter = 0;
+        private const int Buy                   = 1;
+        private const int Sell                  = -1;
+        private int consecutiveWinTradeCounter  = 0;
         private Trade lastTrade;
-
-        private NinjaTrader.NinjaScript.Indicators.JiraiyaIndicators.DowTheoryIndicator DowTheoryIndicator1;
-        private Dictionary<HourList, TimeSpan> hourDictionary = new Dictionary<HourList, TimeSpan>();
+        private Indicators.JiraiyaIndicators.DowTheoryIndicator DowTheoryIndicator1;
+        private Dictionary<HourList, TimeSpan> hourDictionary;
 
         protected override void OnStateChange()
         {
             if (State == State.SetDefaults)
             {
-                Description = @"Enter the description for your new custom Strategy here.";
-                Name = "Test";
-                Calculate = Calculate.OnPriceChange;
-                EntriesPerDirection = 1;
-                EntryHandling = EntryHandling.AllEntries;
-                IsExitOnSessionCloseStrategy = true;
-                ExitOnSessionCloseSeconds = 30;
-                IsFillLimitOnTouch = false;
-                MaximumBarsLookBack = MaximumBarsLookBack.TwoHundredFiftySix;
-                OrderFillResolution = OrderFillResolution.Standard;
-                Slippage = 0;
-                StartBehavior = StartBehavior.WaitUntilFlat;
-                TimeInForce = TimeInForce.Gtc;
-                TraceOrders = false;
-                RealtimeErrorHandling = RealtimeErrorHandling.StopCancelClose;
-                StopTargetHandling = StopTargetHandling.PerEntryExecution;
-                BarsRequiredToTrade = 20;
+                Description                                     = @"Enter the description for your new custom Strategy here.";
+                Name                                            = "Test";
+                Calculate                                       = Calculate.OnPriceChange;
+                EntriesPerDirection                             = 1;
+                EntryHandling                                   = EntryHandling.AllEntries;
+                IsExitOnSessionCloseStrategy                    = true;
+                ExitOnSessionCloseSeconds                       = 30;
+                IsFillLimitOnTouch                              = false;
+                MaximumBarsLookBack                             = MaximumBarsLookBack.TwoHundredFiftySix;
+                OrderFillResolution                             = OrderFillResolution.Standard;
+                Slippage                                        = 0;
+                StartBehavior                                   = StartBehavior.WaitUntilFlat;
+                TimeInForce                                     = TimeInForce.Gtc;
+                TraceOrders                                     = false;
+                RealtimeErrorHandling                           = RealtimeErrorHandling.StopCancelClose;
+                StopTargetHandling                              = StopTargetHandling.PerEntryExecution;
+                BarsRequiredToTrade                             = 20;
                 // Disable this property for performance gains in Strategy Analyzer optimizations
                 // See the Help Guide for additional information
-                IsInstantiatedOnEachOptimizationIteration = IsInstantiatedOnEachOptimizationIterationIsh;
+                IsInstantiatedOnEachOptimizationIteration       = IsInstantiatedOnEachOptimizationIterationIsh;
 
-                CalculationTypeDT = CalculationTypeListDowTheory.Pivot;
-                CalculationTypePCW = CalculationTypeList.SwingForward;
-                Strength = 2;
-                MaxPercentOfPivotRetraction = 80;
-                MinPercentOfPivotRetraction = 20;
-                MaxTime = HourList.hr12h00;
-                MinTime = HourList.hr01h00;
-                PlotOnChart = true;
-                IsInstantiatedOnEachOptimizationIterationIsh = true;
-
-                CreateDictionary();
+                CalculationTypeDT                               = CalculationTypeListDowTheory.Pivot;
+                CalculationTypePCW                              = CalculationTypeList.SwingForward;
+                Strength                                        = 2;
+                MaxPercentOfPivotRetraction                     = 100;
+                MinPercentOfPivotRetraction                     = 0;
+                MinTime                                         = HourList.hr01h00;
+                MaxTime                                         = HourList.hr12h00;
+                PlotOnChart                                     = true;
+                IsInstantiatedOnEachOptimizationIterationIsh    = true;
             }
             else if (State == State.Configure)
             {
             }
             else if (State == State.DataLoaded)
             {
-                DowTheoryIndicator1 = DowTheoryIndicator(Close, CalculationTypeDT, CalculationTypePCW, Strength, true,
-                                                         MaxPercentOfPivotRetraction, MinPercentOfPivotRetraction);
-                DowTheoryIndicator1.Plots[0].Brush = Brushes.Transparent;
+                DowTheoryIndicator1                 = DowTheoryIndicator(Close, CalculationTypeDT, CalculationTypePCW, Strength, true,
+                                                                         MaxPercentOfPivotRetraction, MinPercentOfPivotRetraction);
+                hourDictionary                      = new Dictionary<HourList, TimeSpan>();
+                DowTheoryIndicator1.Plots[0].Brush  = Brushes.Transparent;
                 if(PlotOnChart)
                     AddChartIndicator(DowTheoryIndicator1);
+                CreateDictionary();
             }
         }
 
@@ -106,19 +104,27 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             // Set 1
             if (DowTheoryIndicator1[0] == Buy)
             {
-                EnterLong(Convert.ToInt32(DefaultQuantity));
-                SetStopLossAndProfitTarget(SideTrade.Long);
+                string longOrderID = SideTrade.Long.ToString() + CurrentBar;
+                EnterLong(Convert.ToInt32(DefaultQuantity), longOrderID);
+                SetStopLossAndProfitTarget(SideTrade.Long, longOrderID);
+
+                //This line prevents the same signal open another order in the same bar
+                DowTheoryIndicator1.ResetLongShortSignal();
             }
 
             // Set 2
             if (DowTheoryIndicator1[0] == Sell)
             {
-                EnterShort(Convert.ToInt32(DefaultQuantity));
-                SetStopLossAndProfitTarget(SideTrade.Short);
+                string shortOrderID = SideTrade.Short.ToString() + CurrentBar;
+                EnterShort(Convert.ToInt32(DefaultQuantity), shortOrderID);
+                SetStopLossAndProfitTarget(SideTrade.Short, shortOrderID);
+
+                //This line prevents the same signal open another order in the same bar
+                DowTheoryIndicator1.ResetLongShortSignal();
             }
 
             // Test and increment the consecutive counter
-            if(SystemPerformance.AllTrades.Count != 0 && SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1].ProfitTicks > 0 &&
+            if (SystemPerformance.AllTrades.Count != 0 && SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1].ProfitTicks > 0 &&
                 SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1] != lastTrade)
             {
                 consecutiveWinTradeCounter++;
@@ -136,12 +142,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
 
             // Criar c�digo para aplicar estrat�gia de soros
 
-            if (SystemPerformance.AllTrades.Count != 0)
-                Print(Times[0][0].Date.ToString("dd/MM/yyyy") + "    " + 
-                      Times[0][0].TimeOfDay + "    " + 
-                      "Current time: " + DateTime.Now.ToString("HH:mm:ss") + "    " +
-                      SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1].ProfitCurrency + "    " +
-                      "Current consecutive win: " + consecutiveWinTradeCounter);
+            PrintStrategyStatus();
         }
 
         private double TickValueForUSDQuote
@@ -160,7 +161,17 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             }
         }
 
-        private void SetStopLossAndProfitTarget(SideTrade sideTrade)
+        private void PrintStrategyStatus()
+        {
+            if (SystemPerformance.AllTrades.Count != 0)
+                Print(Times[0][0].Date.ToString("dd/MM/yyyy") + "    " +
+                      Times[0][0].TimeOfDay + "    " +
+                      "Current time: " + DateTime.Now.ToString("HH:mm:ss") + "    " +
+                      SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1].ProfitCurrency + "    " +
+                      "Current consecutive win: " + consecutiveWinTradeCounter);
+        }
+
+        private void SetStopLossAndProfitTarget(SideTrade sideTrade, string orderID)
         {
             //----Bearish----|---Bullish---
             //----3----------|----------0--
@@ -169,49 +180,54 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             //-------2---\---|---/---1-----
             //------------0--|--3----------
 
-            MatrixPoints lastMastrix = DowTheoryIndicator1.LastMatrix;
-
-            // Definir dois pontos que vou utilizar como referencia para a proje��o do alvo
-            Point pointOne = lastMastrix.PointsList[1];
-            Point pointTwo = lastMastrix.PointsList[2];
-
-            Draw.Line(this, "Line " + pointOne.Index,
-                              ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), pointOne.Price,
-                              ConvertBarIndexToBarsAgo(this, pointOne.BarIndex), pointOne.Price, Brushes.Green);
-
-            // Definir um ponto para o stop
-            SetStopLoss(CalculationMode.Price, pointOne.Price);
+            MatrixPoints lastMastrix    = DowTheoryIndicator1.LastMatrix;
+            Point pointZero             = lastMastrix.PointsList[0];
+            Point pointOne              = lastMastrix.PointsList[1];
+            Point pointTwo              = lastMastrix.PointsList[2];
 
             switch (sideTrade)
             {
                 case SideTrade.Long:
+                    Draw.Line(this, "Stop loss line " + pointOne.Index,
+                              ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), pointOne.Price,
+                              ConvertBarIndexToBarsAgo(this, pointZero.BarIndex), pointOne.Price, Brushes.Green);
+
+                    // Definir um ponto para o stop
+                    SetStopLoss(orderID, CalculationMode.Price, pointOne.Price, false);
+
                     double longTargetPrice = pointOne.Price - pointTwo.Price < 0 ?
                                              (pointOne.Price - pointTwo.Price) * -1 : pointOne.Price - pointTwo.Price;
 
                     longTargetPrice += pointTwo.Price;
 
-                    Draw.Line(this, "Line " + pointOne.Index,
+                    Draw.Line(this, "Profit target line " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), longTargetPrice,
-                              ConvertBarIndexToBarsAgo(this, pointOne.BarIndex), longTargetPrice, Brushes.Green);
+                              ConvertBarIndexToBarsAgo(this, pointZero.BarIndex), longTargetPrice, Brushes.Green);
 
-                    SetProfitTarget(CalculationMode.Price, longTargetPrice);
+                    SetProfitTarget(orderID, CalculationMode.Price, longTargetPrice, false);
                     break;
+
                 case SideTrade.Short:
+                    Draw.Line(this, "Stop loss line " + pointOne.Index,
+                              ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), pointOne.Price,
+                              ConvertBarIndexToBarsAgo(this, pointZero.BarIndex), pointOne.Price, Brushes.Red);
+
+                    // Definir um ponto para o stop
+                    SetStopLoss(orderID, CalculationMode.Price, pointOne.Price, false);
+
                     double shortTargetPrice = pointOne.Price - pointTwo.Price < 0 ?
                                              (pointOne.Price - pointTwo.Price) * -1 : pointOne.Price - pointTwo.Price;
 
                     shortTargetPrice -= pointTwo.Price;
                     shortTargetPrice *= -1;
 
-                    Draw.Line(this, "Line " + pointOne.Index,
+                    Draw.Line(this, "Profit target line " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), shortTargetPrice,
-                              ConvertBarIndexToBarsAgo(this, pointOne.BarIndex), shortTargetPrice, Brushes.Red);
+                              ConvertBarIndexToBarsAgo(this, pointZero.BarIndex), shortTargetPrice, Brushes.Red);
 
-                    SetProfitTarget(CalculationMode.Price, shortTargetPrice);
+                    SetProfitTarget(orderID, CalculationMode.Price, shortTargetPrice);
                     break;
             }
-
-            // Com os dois pontos calcular o alvo
         }
 
         private static int ConvertBarIndexToBarsAgo(NinjaScriptBase owner, int barIndex)
@@ -272,6 +288,65 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             hourDictionary.Add(HourList.hr23h59, new TimeSpan(23, 59, 00));
         }
 
+        public enum SideTrade
+        {
+            Long,
+            Short
+        }
+
+        public enum HourList
+        {
+            hr00h00,
+            hr00h30,
+            hr01h00,
+            hr01h30,
+            hr02h00,
+            hr02h30,
+            hr03h00,
+            hr03h30,
+            hr04h00,
+            hr04h30,
+            hr05h00,
+            hr05h30,
+            hr06h00,
+            hr06h30,
+            hr07h00,
+            hr07h30,
+            hr08h00,
+            hr08h30,
+            hr09h00,
+            hr09h30,
+            hr10h00,
+            hr10h30,
+            hr11h00,
+            hr11h30,
+            hr12h00,
+            hr12h30,
+            hr13h00,
+            hr13h30,
+            hr14h00,
+            hr14h30,
+            hr15h00,
+            hr15h30,
+            hr16h00,
+            hr16h30,
+            hr17h00,
+            hr17h30,
+            hr18h00,
+            hr18h30,
+            hr19h00,
+            hr19h30,
+            hr20h00,
+            hr20h30,
+            hr21h00,
+            hr21h30,
+            hr22h00,
+            hr22h30,
+            hr23h00,
+            hr23h30,
+            hr23h59
+        }
+
         #region Properties
         [NinjaScriptProperty]
         [Display(Name = "Dow theory calculation type", Order = 0, GroupName = "Parameters")]
@@ -322,64 +397,5 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
         { get; set; }
 
         #endregion
-    }
-
-    public enum SideTrade
-    {
-        Long,
-        Short
-    }
-
-    public enum HourList
-    {
-        hr00h00,
-        hr00h30,
-        hr01h00,
-        hr01h30,
-        hr02h00,
-        hr02h30,
-        hr03h00,
-        hr03h30,
-        hr04h00,
-        hr04h30,
-        hr05h00,
-        hr05h30,
-        hr06h00,
-        hr06h30,
-        hr07h00,
-        hr07h30,
-        hr08h00,
-        hr08h30,
-        hr09h00,
-        hr09h30,
-        hr10h00,
-        hr10h30,
-        hr11h00,
-        hr11h30,
-        hr12h00,
-        hr12h30,
-        hr13h00,
-        hr13h30,
-        hr14h00,
-        hr14h30,
-        hr15h00,
-        hr15h30,
-        hr16h00,
-        hr16h30,
-        hr17h00,
-        hr17h30,
-        hr18h00,
-        hr18h30,
-        hr19h00,
-        hr19h30,
-        hr20h00,
-        hr20h30,
-        hr21h00,
-        hr21h30,
-        hr22h00,
-        hr22h30,
-        hr23h00,
-        hr23h30,
-        hr23h59
     }
 }
