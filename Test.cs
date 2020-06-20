@@ -136,12 +136,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
 
             // Criar c�digo para aplicar estrat�gia de soros
 
-            if (SystemPerformance.AllTrades.Count != 0)
-                Print(Times[0][0].Date.ToString("dd/MM/yyyy") + "    " + 
-                      Times[0][0].TimeOfDay + "    " + 
-                      "Current time: " + DateTime.Now.ToString("HH:mm:ss") + "    " +
-                      SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1].ProfitCurrency + "    " +
-                      "Current consecutive win: " + consecutiveWinTradeCounter);
+            PrintStrategyStatus();
         }
 
         private double TickValueForUSDQuote
@@ -158,6 +153,16 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             {
                 return TickSize / Close[0];
             }
+        }
+
+        private void PrintStrategyStatus()
+        {
+            if (SystemPerformance.AllTrades.Count != 0)
+                Print(Times[0][0].Date.ToString("dd/MM/yyyy") + "    " +
+                      Times[0][0].TimeOfDay + "    " +
+                      "Current time: " + DateTime.Now.ToString("HH:mm:ss") + "    " +
+                      SystemPerformance.AllTrades[SystemPerformance.AllTrades.Count - 1].ProfitCurrency + "    " +
+                      "Current consecutive win: " + consecutiveWinTradeCounter);
         }
 
         private void SetStopLossAndProfitTarget(SideTrade sideTrade, string orderID)
