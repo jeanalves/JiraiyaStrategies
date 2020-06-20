@@ -272,6 +272,65 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             hourDictionary.Add(HourList.hr23h59, new TimeSpan(23, 59, 00));
         }
 
+        public enum SideTrade
+        {
+            Long,
+            Short
+        }
+
+        public enum HourList
+        {
+            hr00h00,
+            hr00h30,
+            hr01h00,
+            hr01h30,
+            hr02h00,
+            hr02h30,
+            hr03h00,
+            hr03h30,
+            hr04h00,
+            hr04h30,
+            hr05h00,
+            hr05h30,
+            hr06h00,
+            hr06h30,
+            hr07h00,
+            hr07h30,
+            hr08h00,
+            hr08h30,
+            hr09h00,
+            hr09h30,
+            hr10h00,
+            hr10h30,
+            hr11h00,
+            hr11h30,
+            hr12h00,
+            hr12h30,
+            hr13h00,
+            hr13h30,
+            hr14h00,
+            hr14h30,
+            hr15h00,
+            hr15h30,
+            hr16h00,
+            hr16h30,
+            hr17h00,
+            hr17h30,
+            hr18h00,
+            hr18h30,
+            hr19h00,
+            hr19h30,
+            hr20h00,
+            hr20h30,
+            hr21h00,
+            hr21h30,
+            hr22h00,
+            hr22h30,
+            hr23h00,
+            hr23h30,
+            hr23h59
+        }
+
         #region Properties
         [NinjaScriptProperty]
         [Display(Name = "Dow theory calculation type", Order = 0, GroupName = "Parameters")]
@@ -322,64 +381,5 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
         { get; set; }
 
         #endregion
-    }
-
-    public enum SideTrade
-    {
-        Long,
-        Short
-    }
-
-    public enum HourList
-    {
-        hr00h00,
-        hr00h30,
-        hr01h00,
-        hr01h30,
-        hr02h00,
-        hr02h30,
-        hr03h00,
-        hr03h30,
-        hr04h00,
-        hr04h30,
-        hr05h00,
-        hr05h30,
-        hr06h00,
-        hr06h30,
-        hr07h00,
-        hr07h30,
-        hr08h00,
-        hr08h30,
-        hr09h00,
-        hr09h30,
-        hr10h00,
-        hr10h30,
-        hr11h00,
-        hr11h30,
-        hr12h00,
-        hr12h30,
-        hr13h00,
-        hr13h30,
-        hr14h00,
-        hr14h30,
-        hr15h00,
-        hr15h30,
-        hr16h00,
-        hr16h30,
-        hr17h00,
-        hr17h30,
-        hr18h00,
-        hr18h30,
-        hr19h00,
-        hr19h30,
-        hr20h00,
-        hr20h30,
-        hr21h00,
-        hr21h30,
-        hr22h00,
-        hr22h30,
-        hr23h00,
-        hr23h30,
-        hr23h59
     }
 }
