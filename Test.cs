@@ -52,7 +52,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 StartBehavior                                   = StartBehavior.WaitUntilFlat;
                 TimeInForce                                     = TimeInForce.Gtc;
                 TraceOrders                                     = false;
-                RealtimeErrorHandling                           = RealtimeErrorHandling.StopCancelClose;
+                RealtimeErrorHandling                           = RealtimeErrorHandling.StopCancelCloseIgnoreRejects;
                 StopTargetHandling                              = StopTargetHandling.PerEntryExecution;
                 BarsRequiredToTrade                             = 0;
                 // Disable this property for performance gains in Strategy Analyzer optimizations
@@ -104,7 +104,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             // Set 1
             if (DowTheoryIndicator1[0] == Buy)
             {
-                string longOrderID = SideTrade.Long.ToString() + CurrentBar;
+                string longOrderID = SideTrade.Long + " " + CurrentBar;
                 EnterLong(Convert.ToInt32(DefaultQuantity), longOrderID);
                 SetStopLossAndProfitTarget(SideTrade.Long, longOrderID);
 
@@ -115,7 +115,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             // Set 2
             if (DowTheoryIndicator1[0] == Sell)
             {
-                string shortOrderID = SideTrade.Short.ToString() + CurrentBar;
+                string shortOrderID = SideTrade.Short + " " + CurrentBar;
                 EnterShort(Convert.ToInt32(DefaultQuantity), shortOrderID);
                 SetStopLossAndProfitTarget(SideTrade.Short, shortOrderID);
 
@@ -143,6 +143,30 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             // Criar c�digo para aplicar estrat�gia de soros
 
             PrintStrategyStatus();
+        }
+
+        /// <summary>
+        /// https://ninjatrader.com/support/helpGuides/nt8/?realtimeerrorhandling.htm
+        /// </summary>
+        protected override void OnOrderUpdate(Order order, double limitPrice, double stopPrice, 
+                                              int quantity, int filled, double averageFillPrice, 
+                                              OrderState orderState, DateTime time, ErrorCode error, string comment)
+        {
+            if (order.OrderState == OrderState.Rejected)
+            {
+                Code.Output.Process(time + "    " + error, PrintTo.OutputTab2);
+                
+                switch(Position.MarketPosition)
+                {
+                    case MarketPosition.Long:
+                        ExitLong("Panic order", "");
+                        break;
+
+                    case MarketPosition.Short:
+                        ExitShort("Panic order", "");
+                        break;
+                }
+            }
         }
 
         private double TickValueForUSDQuote
