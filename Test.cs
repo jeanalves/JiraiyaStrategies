@@ -54,7 +54,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 TraceOrders                                     = false;
                 RealtimeErrorHandling                           = RealtimeErrorHandling.StopCancelClose;
                 StopTargetHandling                              = StopTargetHandling.PerEntryExecution;
-                BarsRequiredToTrade                             = 20;
+                BarsRequiredToTrade                             = 0;
                 // Disable this property for performance gains in Strategy Analyzer optimizations
                 // See the Help Guide for additional information
                 IsInstantiatedOnEachOptimizationIteration       = IsInstantiatedOnEachOptimizationIterationIsh;
