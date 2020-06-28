@@ -102,7 +102,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 return;
 
             // Set 1
-            if (DowTheoryIndicator1[0] == Buy)
+            if (DowTheoryIndicator1.LongShortSignal == Buy)
             {
                 string longOrderID = SideTrade.Long + " " + CurrentBar;
                 EnterLong(Convert.ToInt32(DefaultQuantity), longOrderID);
@@ -113,7 +113,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             }
 
             // Set 2
-            if (DowTheoryIndicator1[0] == Sell)
+            if (DowTheoryIndicator1.LongShortSignal == Sell)
             {
                 string shortOrderID = SideTrade.Short + " " + CurrentBar;
                 EnterShort(Convert.ToInt32(DefaultQuantity), shortOrderID);
