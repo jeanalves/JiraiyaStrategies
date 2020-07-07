@@ -60,7 +60,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 IsInstantiatedOnEachOptimizationIteration       = IsInstantiatedOnEachOptimizationIterationIsh;
 
                 CalculationTypeDT                               = CalculationTypeListDowTheory.Pivot;
-                CalculationTypePCW                              = CalculationTypeList.SwingForward;
+                CalculationTypePCW                              = CalculationTypeListPriceActionSwing.SwingForward;
                 Strength                                        = 2;
                 MaxPercentOfPivotRetraction                     = 100;
                 MinPercentOfPivotRetraction                     = 0;
@@ -379,7 +379,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
 
         [NinjaScriptProperty]
         [Display(Name = "Price action swing calculation type", Order = 1, GroupName = "Parameters")]
-        public CalculationTypeList CalculationTypePCW
+        public CalculationTypeListPriceActionSwing CalculationTypePCW
         { get; set; }
 
         [NinjaScriptProperty]
