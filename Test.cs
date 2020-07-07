@@ -27,8 +27,6 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
 {
 	public class Test : Strategy
 	{
-        private const int Buy                   = 1;
-        private const int Sell                  = -1;
         private int consecutiveWinTradeCounter  = 0;
         private Trade lastTrade;
         private Indicators.JiraiyaIndicators.DowTheoryIndicator DowTheoryIndicator1;
@@ -102,7 +100,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 return;
 
             // Set 1
-            if (DowTheoryIndicator1.LongShortSignal == Buy)
+            if (DowTheoryIndicator1.LongShortSignalIsh == OrderSideSignal.Buy)
             {
                 string longOrderID = SideTrade.Long + " " + CurrentBar;
                 EnterLong(Convert.ToInt32(DefaultQuantity), longOrderID);
@@ -113,7 +111,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             }
 
             // Set 2
-            if (DowTheoryIndicator1.LongShortSignal == Sell)
+            if (DowTheoryIndicator1.LongShortSignalIsh == OrderSideSignal.Sell)
             {
                 string shortOrderID = SideTrade.Short + " " + CurrentBar;
                 EnterShort(Convert.ToInt32(DefaultQuantity), shortOrderID);
