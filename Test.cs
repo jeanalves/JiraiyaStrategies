@@ -75,7 +75,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 DowTheoryIndicator1                 = DowTheoryIndicator(Close, CalculationTypeDT, CalculationTypePCW, Strength, true,
                                                                          MaxPercentOfPivotRetraction, MinPercentOfPivotRetraction);
                 hourDictionary                      = new Dictionary<HourList, TimeSpan>();
-                DowTheoryIndicator1.Plots[0].Brush  = Brushes.Transparent;
+                
                 if(PlotOnChart)
                     AddChartIndicator(DowTheoryIndicator1);
                 CreateDictionary();
@@ -140,7 +140,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
 
             // Criar c�digo para aplicar estrat�gia de soros
 
-            PrintStrategyStatus();
+            //PrintStrategyStatus();
         }
 
         /// <summary>
