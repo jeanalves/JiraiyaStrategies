@@ -104,9 +104,15 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             // Set 1
             if (DowTheoryIndicator1[0] == Buy)
             {
-                string longOrderID = SideTrade.Long + " " + CurrentBar;
-                EnterLong(Convert.ToInt32(DefaultQuantity), longOrderID);
-                SetStopLossAndProfitTarget(SideTrade.Long, longOrderID);
+                // First entry
+                string firstLongOrderID = "First long entry  " + CurrentBar;
+                EnterLong((DefaultQuantity / 2), firstLongOrderID);
+                SetStopLossAndProfitTarget(SideTrade.Long, firstLongOrderID, 50);
+
+                // Second entry
+                string secondLongOrderID = "Second long entry  " + CurrentBar;
+                EnterLong((DefaultQuantity / 2), secondLongOrderID);
+                SetStopLossAndProfitTarget(SideTrade.Long, secondLongOrderID, 100);
 
                 //This line prevents the same signal open another order in the same bar
                 DowTheoryIndicator1.ResetLongShortSignal();
@@ -115,9 +121,15 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             // Set 2
             if (DowTheoryIndicator1[0] == Sell)
             {
-                string shortOrderID = SideTrade.Short + " " + CurrentBar;
-                EnterShort(Convert.ToInt32(DefaultQuantity), shortOrderID);
-                SetStopLossAndProfitTarget(SideTrade.Short, shortOrderID);
+                // First entry
+                string firstShortOrderID = "First short entry " + CurrentBar;
+                EnterShort((DefaultQuantity / 2), firstShortOrderID);
+                SetStopLossAndProfitTarget(SideTrade.Short, firstShortOrderID, 50);
+
+                // Second entry
+                string secondShortOrderID = "Second short entry " + CurrentBar;
+                EnterShort((DefaultQuantity / 2), secondShortOrderID);
+                SetStopLossAndProfitTarget(SideTrade.Short, secondShortOrderID, 100);
 
                 //This line prevents the same signal open another order in the same bar
                 DowTheoryIndicator1.ResetLongShortSignal();
