@@ -72,10 +72,11 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 MinTime                                         = HourList.hr01h00;
                 MaxTime                                         = HourList.hr12h00;
                 // Parameters of strategy
-                PlotOnChart = true;
+                PlotOnChart                                     = true;
                 IsInstantiatedOnEachOptimizationIterationIsh    = true;
                 FirstTargetPercent                              = 50;
                 SecondTargetPercent                             = 100;
+                IsAllowedToMoveStopLoss                         = true;
             }
             else if (State == State.Configure)
             {
@@ -197,7 +198,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             }
 
             // Move stop loss if the first target price is filled/executed
-            if(order.FromEntrySignal == firstProfitTargetOrderEntrySignalName)
+            if(order.FromEntrySignal == firstProfitTargetOrderEntrySignalName && IsAllowedToMoveStopLoss)
             {
                 if(order.OrderState == OrderState.Filled)
                 {
@@ -488,6 +489,11 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
         [Range(1, 100)]
         [Display(Name = "Second target percentage", Order = 10, GroupName = "Parameters of strategy")]
         public double SecondTargetPercent
+        { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name = "Allow to move stop loss", Order = 11, GroupName = "Parameters of strategy")]
+        public bool IsAllowedToMoveStopLoss
         { get; set; }
 
         #endregion
