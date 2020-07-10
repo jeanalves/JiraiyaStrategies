@@ -195,7 +195,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                       "Current consecutive win: " + consecutiveWinTradeCounter);
         }
 
-        private void SetStopLossAndProfitTarget(SideTrade sideTrade, string orderID)
+        private void SetStopLossAndProfitTarget(SideTrade sideTrade, string orderID, double targetPercent)
         {
             //----Bearish----|---Bullish---
             //----3----------|----------0--
@@ -219,10 +219,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                     // Definir um ponto para o stop
                     SetStopLoss(orderID, CalculationMode.Price, pointOne.Price, false);
 
-                    double longTargetPrice = pointOne.Price - pointTwo.Price < 0 ?
-                                             (pointOne.Price - pointTwo.Price) * -1 : pointOne.Price - pointTwo.Price;
-
-                    longTargetPrice += pointTwo.Price;
+                    double longTargetPrice = MirrorFibonacciCalc(pointOne, pointTwo, targetPercent, SideTrade.Long);
 
                     Draw.Line(this, "Profit target line " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), longTargetPrice,
@@ -239,11 +236,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                     // Definir um ponto para o stop
                     SetStopLoss(orderID, CalculationMode.Price, pointOne.Price, false);
 
-                    double shortTargetPrice = pointOne.Price - pointTwo.Price < 0 ?
-                                             (pointOne.Price - pointTwo.Price) * -1 : pointOne.Price - pointTwo.Price;
-
-                    shortTargetPrice -= pointTwo.Price;
-                    shortTargetPrice *= -1;
+                    double shortTargetPrice = MirrorFibonacciCalc(pointOne, pointTwo, targetPercent, SideTrade.Short);
 
                     Draw.Line(this, "Profit target line " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), shortTargetPrice,
@@ -252,6 +245,34 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                     SetProfitTarget(orderID, CalculationMode.Price, shortTargetPrice);
                     break;
             }
+        }
+
+        private double MirrorFibonacciCalc(Point pointOne, Point pointTwo, double percent, SideTrade sideTrade)
+        {
+            //----Bearish----|---Bullish---
+            //----3----------|----------0--
+            //-----\---1-----|-----2---/---
+            //------\-/-\----|----/-\-/----
+            //-------2---\---|---/---1-----
+            //------------0--|--3----------
+
+            double rangePrice = pointOne.Price - pointTwo.Price < 0 ?
+                          (pointOne.Price - pointTwo.Price) * -1 : pointOne.Price - pointTwo.Price;
+
+            rangePrice = (percent / 100) * rangePrice;
+
+            switch (sideTrade)
+            {
+                case SideTrade.Long:
+
+                    return rangePrice += pointTwo.Price;
+
+                case SideTrade.Short:
+
+                    rangePrice -= pointTwo.Price;
+                    return rangePrice *= -1;
+            }
+            return 0;
         }
 
         private static int ConvertBarIndexToBarsAgo(NinjaScriptBase owner, int barIndex)
