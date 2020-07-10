@@ -74,8 +74,8 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 // Parameters of strategy
                 PlotOnChart                                     = true;
                 IsInstantiatedOnEachOptimizationIterationIsh    = true;
-                FirstTargetPercent                              = 50;
-                SecondTargetPercent                             = 100;
+                FirstTargetPercent                              = 60;  // 61,8
+                SecondTargetPercent                             = 160; // 161,8
                 IsAllowedToMoveStopLoss                         = true;
             }
             else if (State == State.Configure)
