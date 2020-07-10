@@ -202,7 +202,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             {
                 if(order.OrderState == OrderState.Filled)
                 {
-                    SetStopLoss(secondStopLossOrderEntrySignalName, CalculationMode.Currency, Position.AveragePrice,false);
+                    SetStopLoss(secondStopLossOrderEntrySignalName, CalculationMode.Price, Position.AveragePrice,false);
                 }
             }
         }
