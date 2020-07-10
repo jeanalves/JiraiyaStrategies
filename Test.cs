@@ -59,15 +59,19 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 // See the Help Guide for additional information
                 IsInstantiatedOnEachOptimizationIteration       = IsInstantiatedOnEachOptimizationIterationIsh;
 
-                CalculationTypeDT                               = CalculationTypeListDowTheory.Pivot;
+                // Parameters of indicators
+                CalculationTypeDT = CalculationTypeListDowTheory.Pivot;
                 CalculationTypePCW                              = CalculationTypeList.SwingForward;
                 Strength                                        = 2;
                 MaxPercentOfPivotRetraction                     = 100;
                 MinPercentOfPivotRetraction                     = 0;
                 MinTime                                         = HourList.hr01h00;
                 MaxTime                                         = HourList.hr12h00;
-                PlotOnChart                                     = true;
+                // Parameters of strategy
+                PlotOnChart = true;
                 IsInstantiatedOnEachOptimizationIterationIsh    = true;
+                FirstTargetPercent                              = 50;
+                SecondTargetPercent                             = 100;
             }
             else if (State == State.Configure)
             {
@@ -107,12 +111,12 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 // First entry
                 string firstLongOrderID = "First long entry  " + CurrentBar;
                 EnterLong((DefaultQuantity / 2), firstLongOrderID);
-                SetStopLossAndProfitTarget(SideTrade.Long, firstLongOrderID, 50);
+                SetStopLossAndProfitTarget(SideTrade.Long, firstLongOrderID, FirstTargetPercent);
 
                 // Second entry
                 string secondLongOrderID = "Second long entry  " + CurrentBar;
                 EnterLong((DefaultQuantity / 2), secondLongOrderID);
-                SetStopLossAndProfitTarget(SideTrade.Long, secondLongOrderID, 100);
+                SetStopLossAndProfitTarget(SideTrade.Long, secondLongOrderID, SecondTargetPercent);
 
                 //This line prevents the same signal open another order in the same bar
                 DowTheoryIndicator1.ResetLongShortSignal();
@@ -124,12 +128,12 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 // First entry
                 string firstShortOrderID = "First short entry " + CurrentBar;
                 EnterShort((DefaultQuantity / 2), firstShortOrderID);
-                SetStopLossAndProfitTarget(SideTrade.Short, firstShortOrderID, 50);
+                SetStopLossAndProfitTarget(SideTrade.Short, firstShortOrderID, FirstTargetPercent);
 
                 // Second entry
                 string secondShortOrderID = "Second short entry " + CurrentBar;
                 EnterShort((DefaultQuantity / 2), secondShortOrderID);
-                SetStopLossAndProfitTarget(SideTrade.Short, secondShortOrderID, 100);
+                SetStopLossAndProfitTarget(SideTrade.Short, secondShortOrderID, SecondTargetPercent);
 
                 //This line prevents the same signal open another order in the same bar
                 DowTheoryIndicator1.ResetLongShortSignal();
@@ -406,51 +410,63 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
 
         #region Properties
         [NinjaScriptProperty]
-        [Display(Name = "Dow theory calculation type", Order = 0, GroupName = "Parameters")]
+        [Display(Name = "Dow theory calculation type", Order = 0, GroupName = "Parameters of indicators")]
         public CalculationTypeListDowTheory CalculationTypeDT
         { get; set; }
 
         [NinjaScriptProperty]
-        [Display(Name = "Price action swing calculation type", Order = 1, GroupName = "Parameters")]
+        [Display(Name = "Price action swing calculation type", Order = 1, GroupName = "Parameters of indicators")]
         public CalculationTypeList CalculationTypePCW
         { get; set; }
 
         [NinjaScriptProperty]
         [Range(0, int.MaxValue)]
-        [Display(Name = "Strength", Order = 2, GroupName = "Parameters")]
+        [Display(Name = "Strength", Order = 2, GroupName = "Parameters of indicators")]
         public int Strength
         { get; set; }
 
         [NinjaScriptProperty]
         [Range(0, 100)]
-        [Display(Name = "Max percent of pivot retraction", Order = 3, GroupName = "Parameters")]
+        [Display(Name = "Max percent of pivot retraction", Order = 3, GroupName = "Parameters of indicators")]
         public double MaxPercentOfPivotRetraction
         { get; set; }
 
         [NinjaScriptProperty]
         [Range(0, 100)]
-        [Display(Name = "Min percent of pivot retraction", Order = 4, GroupName = "Parameters")]
+        [Display(Name = "Min percent of pivot retraction", Order = 4, GroupName = "Parameters of indicators")]
         public double MinPercentOfPivotRetraction
         { get; set; }
 
         [NinjaScriptProperty]
-        [Display(Name = "Min time", Order = 5, GroupName = "Parameters")]
+        [Display(Name = "Min time", Order = 5, GroupName = "Parameters of strategy")]
         public HourList MinTime
         { get; set; }
 
         [NinjaScriptProperty]
-        [Display(Name = "Max time", Order = 6, GroupName = "Parameters")]
+        [Display(Name = "Max time", Order = 6, GroupName = "Parameters of strategy")]
         public HourList MaxTime
         { get; set; }
 
         [NinjaScriptProperty]
-        [Display(Name = "Plot on chart", Order = 7, GroupName = "Parameters")]
+        [Display(Name = "Plot on chart", Order = 7, GroupName = "Parameters of strategy")]
         public bool PlotOnChart
         { get; set; }
 
         [NinjaScriptProperty]
-        [Display(Name = "Is Instantiated On Each Optimization Iteration", Order = 8, GroupName = "Parameters")]
+        [Display(Name = "Is Instantiated On Each Optimization Iteration", Order = 8, GroupName = "Parameters of strategy")]
         public bool IsInstantiatedOnEachOptimizationIterationIsh
+        { get; set; }
+
+        [NinjaScriptProperty]
+        [Range(1,100)]
+        [Display(Name = "First target percentage", Order = 9, GroupName = "Parameters of strategy")]
+        public double FirstTargetPercent
+        { get; set; }
+
+        [NinjaScriptProperty]
+        [Range(1, 100)]
+        [Display(Name = "Second target percentage", Order = 10, GroupName = "Parameters of strategy")]
+        public double SecondTargetPercent
         { get; set; }
 
         #endregion
