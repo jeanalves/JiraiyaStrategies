@@ -33,6 +33,10 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
         private Trade lastTrade;
         private Indicators.JiraiyaIndicators.DowTheoryIndicator DowTheoryIndicator1;
         private Dictionary<HourList, TimeSpan> hourDictionary;
+        private string firstStopLossOrderEntrySignalName;
+        private string secondStopLossOrderEntrySignalName;
+        private string firstProfitTargetOrderEntrySignalName;
+        private string SecondProfitTargetOrderEntrySignalName;
 
         protected override void OnStateChange()
         {
@@ -41,7 +45,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 Description                                     = @"Enter the description for your new custom Strategy here.";
                 Name                                            = "Test";
                 Calculate                                       = Calculate.OnPriceChange;
-                EntriesPerDirection                             = 1;
+                EntriesPerDirection                             = 10;
                 EntryHandling                                   = EntryHandling.AllEntries;
                 IsExitOnSessionCloseStrategy                    = true;
                 ExitOnSessionCloseSeconds                       = 30;
@@ -109,14 +113,18 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             if (DowTheoryIndicator1[0] == Buy)
             {
                 // First entry
-                string firstLongOrderID = "First long entry  " + CurrentBar;
-                EnterLong((DefaultQuantity / 2), firstLongOrderID);
-                SetStopLossAndProfitTarget(SideTrade.Long, firstLongOrderID, FirstTargetPercent);
+                string firstLongOrderSignalName = "First long entry  " + CurrentBar;
+                EnterLong((DefaultQuantity / 2), firstLongOrderSignalName);
+                SetStopLossAndProfitTarget(SideTrade.Long, firstLongOrderSignalName, FirstTargetPercent);
+                firstStopLossOrderEntrySignalName = firstLongOrderSignalName;
+                firstProfitTargetOrderEntrySignalName = firstLongOrderSignalName;
 
                 // Second entry
-                string secondLongOrderID = "Second long entry  " + CurrentBar;
-                EnterLong((DefaultQuantity / 2), secondLongOrderID);
-                SetStopLossAndProfitTarget(SideTrade.Long, secondLongOrderID, SecondTargetPercent);
+                string secondLongOrderSignalName = "Second long entry  " + CurrentBar;
+                EnterLong((DefaultQuantity / 2), secondLongOrderSignalName);
+                SetStopLossAndProfitTarget(SideTrade.Long, secondLongOrderSignalName, SecondTargetPercent);
+                secondStopLossOrderEntrySignalName = secondLongOrderSignalName;
+                SecondProfitTargetOrderEntrySignalName = secondLongOrderSignalName;
 
                 //This line prevents the same signal open another order in the same bar
                 DowTheoryIndicator1.ResetLongShortSignal();
@@ -126,14 +134,18 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             if (DowTheoryIndicator1[0] == Sell)
             {
                 // First entry
-                string firstShortOrderID = "First short entry " + CurrentBar;
-                EnterShort((DefaultQuantity / 2), firstShortOrderID);
-                SetStopLossAndProfitTarget(SideTrade.Short, firstShortOrderID, FirstTargetPercent);
+                string firstShortOrderSignalName = "First short entry " + CurrentBar;
+                EnterShort((DefaultQuantity / 2), firstShortOrderSignalName);
+                SetStopLossAndProfitTarget(SideTrade.Short, firstShortOrderSignalName, FirstTargetPercent);
+                firstStopLossOrderEntrySignalName = firstShortOrderSignalName;
+                firstProfitTargetOrderEntrySignalName = firstShortOrderSignalName;
 
                 // Second entry
-                string secondShortOrderID = "Second short entry " + CurrentBar;
-                EnterShort((DefaultQuantity / 2), secondShortOrderID);
-                SetStopLossAndProfitTarget(SideTrade.Short, secondShortOrderID, SecondTargetPercent);
+                string secondShortOrderSignalName = "Second short entry " + CurrentBar;
+                EnterShort((DefaultQuantity / 2), secondShortOrderSignalName);
+                SetStopLossAndProfitTarget(SideTrade.Short, secondShortOrderSignalName, SecondTargetPercent);
+                secondStopLossOrderEntrySignalName = secondShortOrderSignalName;
+                SecondProfitTargetOrderEntrySignalName = secondShortOrderSignalName;
 
                 //This line prevents the same signal open another order in the same bar
                 DowTheoryIndicator1.ResetLongShortSignal();
@@ -183,6 +195,15 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                         break;
                 }
             }
+
+            // Move stop loss if the first target price is filled/executed
+            if(order.FromEntrySignal == firstProfitTargetOrderEntrySignalName)
+            {
+                if(order.OrderState == OrderState.Filled)
+                {
+                    SetStopLoss(secondStopLossOrderEntrySignalName, CalculationMode.Currency, Position.AveragePrice,false);
+                }
+            }
         }
 
         private double TickValueForUSDQuote
@@ -211,7 +232,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                       "Current consecutive win: " + consecutiveWinTradeCounter);
         }
 
-        private void SetStopLossAndProfitTarget(SideTrade sideTrade, string orderID, double targetPercent)
+        private void SetStopLossAndProfitTarget(SideTrade sideTrade, string orderSignalName, double targetPercent)
         {
             //----Bearish----|---Bullish---
             //----3----------|----------0--
@@ -228,37 +249,37 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             switch (sideTrade)
             {
                 case SideTrade.Long:
-                    Draw.Line(this, "Stop loss line " + pointOne.Index,
+                    Draw.Line(this, "Stop loss line from: " + orderSignalName + " " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), pointOne.Price,
                               ConvertBarIndexToBarsAgo(this, pointZero.BarIndex), pointOne.Price, Brushes.Green);
 
                     // Definir um ponto para o stop
-                    SetStopLoss(orderID, CalculationMode.Price, pointOne.Price, false);
+                    SetStopLoss(orderSignalName, CalculationMode.Price, pointOne.Price, false);
 
                     double longTargetPrice = MirrorFibonacciCalc(pointOne, pointTwo, targetPercent, SideTrade.Long);
 
-                    Draw.Line(this, "Profit target line " + pointOne.Index,
+                    Draw.Line(this, "Profit target line from: " + orderSignalName + " " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), longTargetPrice,
                               ConvertBarIndexToBarsAgo(this, pointZero.BarIndex), longTargetPrice, Brushes.Green);
 
-                    SetProfitTarget(orderID, CalculationMode.Price, longTargetPrice, false);
+                    SetProfitTarget(orderSignalName, CalculationMode.Price, longTargetPrice, false);
                     break;
 
                 case SideTrade.Short:
-                    Draw.Line(this, "Stop loss line " + pointOne.Index,
+                    Draw.Line(this, "Stop loss line from: " + orderSignalName + " " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), pointOne.Price,
                               ConvertBarIndexToBarsAgo(this, pointZero.BarIndex), pointOne.Price, Brushes.Red);
 
                     // Definir um ponto para o stop
-                    SetStopLoss(orderID, CalculationMode.Price, pointOne.Price, false);
+                    SetStopLoss(orderSignalName, CalculationMode.Price, pointOne.Price, false);
 
                     double shortTargetPrice = MirrorFibonacciCalc(pointOne, pointTwo, targetPercent, SideTrade.Short);
 
-                    Draw.Line(this, "Profit target line " + pointOne.Index,
+                    Draw.Line(this, "Profit target line from: " + orderSignalName + " " + pointOne.Index,
                               ConvertBarIndexToBarsAgo(this, pointTwo.BarIndex), shortTargetPrice,
                               ConvertBarIndexToBarsAgo(this, pointZero.BarIndex), shortTargetPrice, Brushes.Red);
 
-                    SetProfitTarget(orderID, CalculationMode.Price, shortTargetPrice);
+                    SetProfitTarget(orderSignalName, CalculationMode.Price, shortTargetPrice);
                     break;
             }
         }
