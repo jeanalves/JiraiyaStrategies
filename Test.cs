@@ -33,10 +33,6 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
         private Trade lastTrade;
         private Indicators.JiraiyaIndicators.DowTheoryIndicator DowTheoryIndicator1;
         private Dictionary<HourList, TimeSpan> hourDictionary;
-        private string firstStopLossOrderEntrySignalName;
-        private string secondStopLossOrderEntrySignalName;
-        private string firstProfitTargetOrderEntrySignalName;
-        private string SecondProfitTargetOrderEntrySignalName;
         private Order firstOrderEntry;
         private Order secondOrderEntry;
 
@@ -119,15 +115,11 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 string firstLongOrderSignalName = "First long entry  " + CurrentBar;
                 firstOrderEntry = EnterLong(DefaultQuantity, firstLongOrderSignalName);
                 SetStopLossAndProfitTarget(SideTrade.Long, firstLongOrderSignalName, FirstTargetPercent);
-                firstStopLossOrderEntrySignalName = firstLongOrderSignalName;
-                firstProfitTargetOrderEntrySignalName = firstLongOrderSignalName;
 
                 // Second entry
                 string secondLongOrderSignalName = "Second long entry  " + CurrentBar;
                 secondOrderEntry = EnterLong(DefaultQuantity, secondLongOrderSignalName);
                 SetStopLossAndProfitTarget(SideTrade.Long, secondLongOrderSignalName, SecondTargetPercent);
-                secondStopLossOrderEntrySignalName = secondLongOrderSignalName;
-                SecondProfitTargetOrderEntrySignalName = secondLongOrderSignalName;
 
                 //This line prevents the same signal open another order in the same bar
                 DowTheoryIndicator1.ResetLongShortSignal();
@@ -140,15 +132,11 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 string firstShortOrderSignalName = "First short entry " + CurrentBar;
                 firstOrderEntry = EnterShort(DefaultQuantity, firstShortOrderSignalName);
                 SetStopLossAndProfitTarget(SideTrade.Short, firstShortOrderSignalName, FirstTargetPercent);
-                firstStopLossOrderEntrySignalName = firstShortOrderSignalName;
-                firstProfitTargetOrderEntrySignalName = firstShortOrderSignalName;
 
                 // Second entry
                 string secondShortOrderSignalName = "Second short entry " + CurrentBar;
                 secondOrderEntry = EnterShort(DefaultQuantity, secondShortOrderSignalName);
                 SetStopLossAndProfitTarget(SideTrade.Short, secondShortOrderSignalName, SecondTargetPercent);
-                secondStopLossOrderEntrySignalName = secondShortOrderSignalName;
-                SecondProfitTargetOrderEntrySignalName = secondShortOrderSignalName;
 
                 //This line prevents the same signal open another order in the same bar
                 DowTheoryIndicator1.ResetLongShortSignal();
@@ -172,8 +160,8 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             // Multiplicar pela quantidade de lotes
 
             // Criar c�digo para aplicar estrat�gia de soros
-
-            PrintStrategyStatus();
+            if(IsInStrategyAnalyzer)
+                PrintStrategyStatus();
         }
 
         /// <summary>
@@ -191,11 +179,13 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             }
 
             // Move stop loss if the first target price is filled/executed
-            if(order.FromEntrySignal == firstProfitTargetOrderEntrySignalName && IsAllowedToMoveStopLoss)
+            if (firstOrderEntry != null &&
+                order.FromEntrySignal == firstOrderEntry.Name && 
+                IsAllowedToMoveStopLoss)
             {
                 if(order.OrderState == OrderState.Filled)
                 {
-                    SetStopLoss(secondStopLossOrderEntrySignalName, CalculationMode.Price, Position.AveragePrice,false);
+                    SetStopLoss(secondOrderEntry.Name, CalculationMode.Price, Position.AveragePrice,false);
                 }
             }
         }
