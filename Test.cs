@@ -37,6 +37,8 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
         private string secondStopLossOrderEntrySignalName;
         private string firstProfitTargetOrderEntrySignalName;
         private string SecondProfitTargetOrderEntrySignalName;
+        private Order firstOrderEntry;
+        private Order secondOrderEntry;
 
         protected override void OnStateChange()
         {
@@ -115,14 +117,14 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             {
                 // First entry
                 string firstLongOrderSignalName = "First long entry  " + CurrentBar;
-                EnterLong(DefaultQuantity, firstLongOrderSignalName);
+                firstOrderEntry = EnterLong(DefaultQuantity, firstLongOrderSignalName);
                 SetStopLossAndProfitTarget(SideTrade.Long, firstLongOrderSignalName, FirstTargetPercent);
                 firstStopLossOrderEntrySignalName = firstLongOrderSignalName;
                 firstProfitTargetOrderEntrySignalName = firstLongOrderSignalName;
 
                 // Second entry
                 string secondLongOrderSignalName = "Second long entry  " + CurrentBar;
-                EnterLong(DefaultQuantity, secondLongOrderSignalName);
+                secondOrderEntry = EnterLong(DefaultQuantity, secondLongOrderSignalName);
                 SetStopLossAndProfitTarget(SideTrade.Long, secondLongOrderSignalName, SecondTargetPercent);
                 secondStopLossOrderEntrySignalName = secondLongOrderSignalName;
                 SecondProfitTargetOrderEntrySignalName = secondLongOrderSignalName;
@@ -136,14 +138,14 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             {
                 // First entry
                 string firstShortOrderSignalName = "First short entry " + CurrentBar;
-                EnterShort(DefaultQuantity, firstShortOrderSignalName);
+                firstOrderEntry = EnterShort(DefaultQuantity, firstShortOrderSignalName);
                 SetStopLossAndProfitTarget(SideTrade.Short, firstShortOrderSignalName, FirstTargetPercent);
                 firstStopLossOrderEntrySignalName = firstShortOrderSignalName;
                 firstProfitTargetOrderEntrySignalName = firstShortOrderSignalName;
 
                 // Second entry
                 string secondShortOrderSignalName = "Second short entry " + CurrentBar;
-                EnterShort(DefaultQuantity, secondShortOrderSignalName);
+                secondOrderEntry = EnterShort(DefaultQuantity, secondShortOrderSignalName);
                 SetStopLossAndProfitTarget(SideTrade.Short, secondShortOrderSignalName, SecondTargetPercent);
                 secondStopLossOrderEntrySignalName = secondShortOrderSignalName;
                 SecondProfitTargetOrderEntrySignalName = secondShortOrderSignalName;
