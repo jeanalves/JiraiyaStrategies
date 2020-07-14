@@ -184,17 +184,8 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             if (order.OrderState == OrderState.Rejected)
             {
                 Code.Output.Process(time + "    " + error, PrintTo.OutputTab2);
-                
-                switch(Position.MarketPosition)
-                {
-                    case MarketPosition.Long:
-                        ExitLong("Panic order", "");
-                        break;
 
-                    case MarketPosition.Short:
-                        ExitShort("Panic order", "");
-                        break;
-                }
+                CloseCurrentPosition();
             }
 
             // Move stop loss if the first target price is filled/executed
@@ -311,6 +302,20 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                     return rangePrice *= -1;
             }
             return 0;
+        }
+
+        private void CloseCurrentPosition()
+        {
+            switch (Position.MarketPosition)
+            {
+                case MarketPosition.Long:
+                    ExitLong("Panic order", "");
+                    break;
+
+                case MarketPosition.Short:
+                    ExitShort("Panic order", "");
+                    break;
+            }
         }
 
         private static int ConvertBarIndexToBarsAgo(NinjaScriptBase owner, int barIndex)
