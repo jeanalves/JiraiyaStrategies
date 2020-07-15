@@ -191,6 +191,9 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                         SetStopLoss(secondOrderEntry.Name, CalculationMode.Price, Position.AveragePrice - (TickSize * 3), false);
                 }
             }
+
+            if (order.OrderState == OrderState.Working)
+                Code.Output.Process(order.Oco + " Name: " + order.Name + " FromEntSigNm: " + order.FromEntrySignal + " status: " + order.OrderState, PrintTo.OutputTab2);
         }
 
         private double TickValueForUSDQuote
