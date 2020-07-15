@@ -185,7 +185,10 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
             {
                 if(order.OrderState == OrderState.Filled)
                 {
-                    SetStopLoss(secondOrderEntry.Name, CalculationMode.Price, Position.AveragePrice,false);
+                    if (Position.MarketPosition == MarketPosition.Long)
+                        SetStopLoss(secondOrderEntry.Name, CalculationMode.Price, Position.AveragePrice + (TickSize * 3),false);
+                    else if (Position.MarketPosition == MarketPosition.Short)
+                        SetStopLoss(secondOrderEntry.Name, CalculationMode.Price, Position.AveragePrice - (TickSize * 3), false);
                 }
             }
         }
