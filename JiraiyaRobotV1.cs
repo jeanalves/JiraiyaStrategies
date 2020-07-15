@@ -49,7 +49,7 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 ExitOnSessionCloseSeconds                       = 30;
                 IsFillLimitOnTouch                              = false;
                 MaximumBarsLookBack                             = MaximumBarsLookBack.TwoHundredFiftySix;
-                OrderFillResolution                             = OrderFillResolution.Standard;
+                OrderFillResolution                             = OrderFillResolution.High;
                 Slippage                                        = 0;
                 StartBehavior                                   = StartBehavior.WaitUntilFlat;
                 TimeInForce                                     = TimeInForce.Gtc;
