@@ -67,8 +67,8 @@ namespace NinjaTrader.NinjaScript.Strategies.JiraiyaStrategies
                 Strength                                        = 2;
                 MaxPercentOfPivotRetraction                     = 100;
                 MinPercentOfPivotRetraction                     = 0;
-                MinTime                                         = HourList.hr01h00;
-                MaxTime                                         = HourList.hr12h00;
+                MinTime                                         = HourList.hr00h00;
+                MaxTime                                         = HourList.hr23h59;
                 // Parameters of strategy
                 PlotOnChart                                     = true;
                 IsInstantiatedOnEachOptimizationIterationIsh    = true;
